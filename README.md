@@ -1,8 +1,10 @@
 # Ohtupalautukset
 This repository contains course work.
 
-## Link to ohtuvarasto
+## Links
+
+### `ohtuvarasto`
 [https://github.com/Esinko/hy-ohtuvarasto](https://github.com/Esinko/hy-ohtuvarasto)
 
-## Link to webcounter
+### `webcounter`
 [https://github.com/Esinko/hy-ohtuwebcounter](https://github.com/Esinko/hy-ohtuwebcounter)
