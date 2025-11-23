@@ -35,6 +35,8 @@ class TestKauppa(unittest.TestCase):
         kauppa = Kauppa(varasto_mock, pankki_mock, viitegeneraattori_mock)
         self.kauppa = kauppa
         self.pankki_mock = pankki_mock
+        self.viitegeneraattori_mock = viitegeneraattori_mock
+        self.varasto_mock = varasto_mock
 
     def test_maksettaessa_ostos_pankin_metodia_tilisiirto_kutsutaan(self):
         self.kauppa.aloita_asiointi()
@@ -69,3 +71,28 @@ class TestKauppa(unittest.TestCase):
         self.kauppa.tilimaksu("pekka", "12345")
         self.pankki_mock.tilisiirto.assert_called_with("pekka", 42, "12345", self.kauppa._kaupan_tili, 5)
 
+    def test_aloita_asiointi_nollaa(self):
+        ostoskori_mock = Mock()
+        self.kauppa._ostoskori = ostoskori_mock
+        self.kauppa.aloita_asiointi()
+        ostoskori_mock.assert_not_called()
+
+    def test_kauppa_pyytaa_aina_viitenumeron(self):
+        self.kauppa.aloita_asiointi()
+        self.kauppa.lisaa_koriin(1)
+        self.kauppa.tilimaksu("pekka", "12345")
+        self.viitegeneraattori_mock.uusi.assert_called()
+        self.kauppa.aloita_asiointi()
+        self.kauppa.lisaa_koriin(1)
+        self.kauppa.tilimaksu("pekka", "12345")
+        self.viitegeneraattori_mock.uusi.assert_called()
+
+    def test_poista_kortista_poistaa(self):
+        ostoskori_mock = Mock()
+        maito = Tuote(1, "maito", 5)
+        self.kauppa.aloita_asiointi()
+        self.kauppa._ostoskori = ostoskori_mock
+        self.kauppa.lisaa_koriin(1)
+        self.kauppa.poista_korista(1)
+        self.varasto_mock.palauta_varastoon.assert_called_with(maito)
+        ostoskori_mock.poista.assert_called_with(maito)
