@@ -50,3 +50,4 @@ sequenceDiagram
     Kauppa->>Pankki: tilisiirto(nimi, viite, tili, kaupan_tili, summa)
     Pankki-->>Kauppa: OK
 ```
+
