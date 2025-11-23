@@ -51,3 +51,4 @@ sequenceDiagram
     Pankki-->>Kauppa: OK
 ```
 
+foo
