@@ -23,7 +23,7 @@ tennis_lead_to_win = 2
 class TennisGame:
     players: Dict[TennisPlayerId, TennisPlayer]
     scores: Dict[TennisPlayerId, int]
-    state: Literal["setup"] | Literal["on-going"] | Literal["concluded"]
+    state: Literal["setup", "on-going", "concluded"]
     winner: TennisPlayer | None
 
     def __init__(self, player1_name: str, player2_name: str):
@@ -34,7 +34,6 @@ class TennisGame:
 
         # NOTE: We specifically support a 2 player game for now (no teams)
         player_names = [player1_name, player2_name]
-        self.players = {}
         for player_name in player_names:
             self.add_player(player_name)
 
@@ -58,7 +57,7 @@ class TennisGame:
     
 
     def get_player_by_id(self, player_id: int) -> TennisPlayer | None:
-        return self.players[player_id]
+        return self.players.get(player_id)
 
 
     def get_player_by_name(self, player_name: str) -> TennisPlayer | None:
@@ -82,7 +81,7 @@ class TennisGame:
             self._check_for_winner()
 
 
-    def _check_for_winner(self) -> int:
+    def _check_for_winner(self):
         # NOTE: Scrap for team support
         all_scores = [self.scores[player_id] for player_id in self.scores]
         smallest_score = min(all_scores)
