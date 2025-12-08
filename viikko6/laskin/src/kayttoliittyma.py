@@ -1,6 +1,6 @@
 from enum import Enum
 from tkinter import ttk, constants, StringVar
-
+from komennot import Summa, Erotus, Nollaus, Kumoa, RevertableBaseKomento
 
 class Komento(Enum):
     SUMMA = 1
@@ -10,9 +10,20 @@ class Komento(Enum):
 
 
 class Kayttoliittyma:
+    _previous_command: RevertableBaseKomento | None
+    _komennot: dict[Komento, type[RevertableBaseKomento]]
+
     def __init__(self, sovelluslogiikka, root):
         self._sovelluslogiikka = sovelluslogiikka
         self._root = root
+
+        self._previous_command = None
+        self._komennot = {
+            Komento.SUMMA: Summa,
+            Komento.EROTUS: Erotus,
+            Komento.NOLLAUS: Nollaus,
+            Komento.KUMOA: Kumoa
+        }
 
     def kaynnista(self):
         self._arvo_var = StringVar()
@@ -54,23 +65,21 @@ class Kayttoliittyma:
         self._nollaus_painike.grid(row=2, column=2)
         self._kumoa_painike.grid(row=2, column=3)
 
-    def _suorita_komento(self, komento):
+    def _lue_syote(self):
         arvo = 0
-
         try:
             arvo = int(self._syote_kentta.get())
         except Exception:
             pass
 
-        if komento == Komento.SUMMA:
-            self._sovelluslogiikka.plus(arvo)
-        elif komento == Komento.EROTUS:
-            self._sovelluslogiikka.miinus(arvo)
-        elif komento == Komento.NOLLAUS:
-            self._sovelluslogiikka.nollaa()
-        elif komento == Komento.KUMOA:
-            pass
+        return arvo
 
+    def _suorita_komento(self, komento):
+        command_instance = self._komennot[komento](previous_command=self._previous_command,
+                                                   operator=self._sovelluslogiikka,
+                                                   operand=self._lue_syote())
+        command_instance.suorita()
+        self._previous_command = command_instance
         self._kumoa_painike["state"] = constants.NORMAL
 
         if self._sovelluslogiikka.arvo() == 0:
