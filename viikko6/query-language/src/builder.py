@@ -16,6 +16,10 @@ class Query:
         return And(self._stack or All(), self._matcher or All())
 
 class QueryBuilder(Query):
+    def one_of(self, *queries: Self):
+        built = map(lambda q: q.build(), queries)
+        return self.__class__(self._stack, Or(*built))
+
     def plays_in(self, team: str) -> Self:
         return self.__class__(self._stack, PlaysIn(team))
 
