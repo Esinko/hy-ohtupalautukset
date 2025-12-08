@@ -13,8 +13,7 @@ class Query:
             self._stack = And(self._stack, self._matcher)
 
     def build(self):
-        return And(self._stack, self._matcher)
-    
+        return And(self._stack or All(), self._matcher or All())
 
 class QueryBuilder(Query):
     def plays_in(self, team: str) -> Self:
