@@ -53,7 +53,7 @@ class HasFewerThan:
     def test(self, player):
         player_value = getattr(player, self._attr)
 
-        return player_value <= self._value
+        return player_value < self._value
     
 
 class Or:
