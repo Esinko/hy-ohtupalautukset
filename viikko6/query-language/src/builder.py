@@ -1,31 +1,25 @@
-from typing import Self
-from matchers import And, HasAtLeast, PlaysIn, Not, HasFewerThan, All, Or
+from typing import Self, Tuple
+from matchers import And, HasAtLeast, PlaysIn, HasFewerThan, All, Or
 
 
 class Query:
-    def __init__(self, stack=None, matcher=None):
-        self._stack = stack 
-        self._matcher = matcher
-        
-        if not self._stack:
-            self._stack = self._matcher
-        else:
-            self._stack = And(self._stack, self._matcher)
+    def __init__(self, stack: Tuple[Self] | None = None, matcher=All()):
+        self._stack = (*(stack or tuple()), matcher)
 
     def build(self):
-        return And(self._stack or All(), self._matcher or All())
+        return And(*self._stack)
 
 class QueryBuilder(Query):
     def one_of(self, *queries: Self):
         built = map(lambda q: q.build(), queries)
-        return self.__class__(self._stack, Or(*built))
+        return QueryBuilder(self._stack, Or(*built))
 
     def plays_in(self, team: str) -> Self:
-        return self.__class__(self._stack, PlaysIn(team))
+        return QueryBuilder(self._stack, PlaysIn(team))
 
     def has_at_least(self, value: int, attr: str) -> Self:
-        return self.__class__(self._stack, HasAtLeast(value, attr))
+        return QueryBuilder(self._stack, HasAtLeast(value, attr))
 
     def has_fewer_than(self, value: int, attr: str) -> Self:
-        return self.__class__(self._stack, HasFewerThan(value, attr))
+        return QueryBuilder(self._stack, HasFewerThan(value, attr))
     
