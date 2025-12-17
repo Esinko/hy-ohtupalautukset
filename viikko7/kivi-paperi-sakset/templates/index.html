@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Valitse peli - Kivi-Paperi-Sakset{% endblock %}
+
+{% block content %}
+<h2>Valitse pelityyppi</h2>
+
+<form method="POST" action="{{ url_for('start_game') }}">
+    <div class="game-option">
+        <label>
+            <input type="radio" name="game_type" value="pelaaja_vs_pelaaja" required>
+            {{ game_names['pelaaja_vs_pelaaja'] }}
+        </label>
+        <p style="margin-left: 20px; color: #666;">Kaksi pelaajaa samalla koneella</p>
+    </div>
+    
+    <div class="game-option">
+        <label>
+            <input type="radio" name="game_type" value="tekoaly" required>
+            {{ game_names['tekoaly'] }}
+        </label>
+        <p style="margin-left: 20px; color: #666;">Pelaa yksinkertaista tekoälyä vastaan</p>
+    </div>
+    
+    <div class="game-option">
+        <label>
+            <input type="radio" name="game_type" value="parempi_tekoaly" required>
+            {{ game_names['parempi_tekoaly'] }}
+        </label>
+        <p style="margin-left: 20px; color: #666;">Pelaa oppivaa tekoälyä vastaan (muistaa 10 viimeisintä siirtoasi)</p>
+    </div>
+    
+    <button type="submit">Aloita peli</button>
+</form>
+{% endblock %}

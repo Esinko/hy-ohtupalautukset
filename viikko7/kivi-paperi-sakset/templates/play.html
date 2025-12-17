@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Pelaa - {{ game_name }}{% endblock %}
+
+{% block content %}
+<h2>{{ game_name }}</h2>
+
+<div class="score-box">
+    <h3>Pelitilanne</h3>
+    <p>Pelaaja 1: {{ game.player1_points }} pistettä</p>
+    <p>Pelaaja 2: {{ game.player2_points }} pistettä</p>
+    <p>Tasapelit: {{ game.tie_count }}</p>
+</div>
+
+{% if last_result %}
+<div class="result-box result-{{ last_result }}">
+    <h3>Edellinen kierros</h3>
+    <p>Pelaaja 1 valitsi: {{ last_player1_move|upper }}</p>
+    <p>Pelaaja 2 valitsi: {{ last_player2_move|upper }}</p>
+    {% if last_result == 'win' %}
+    <p>➤ Pelaaja 1 voitti!</p>
+    {% elif last_result == 'lose' %}
+    <p>➤ Pelaaja 2 voitti!</p>
+    {% else %}
+    <p>➤ Tasapeli!</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('make_move') }}">
+    {% if game_type == 'pelaaja_vs_pelaaja' %}
+        <div class="two-player-form">
+            <h3>Pelaaja 1: Valitse siirtosi</h3>
+            <div class="button-group">
+                <button type="button" class="move-button" onclick="selectMove('player1_move', 'k', this)">K (Kivi)</button>
+                <button type="button" class="move-button" onclick="selectMove('player1_move', 'p', this)">P (Paperi)</button>
+                <button type="button" class="move-button" onclick="selectMove('player1_move', 's', this)">S (Sakset)</button>
+            </div>
+            <input type="hidden" name="player1_move" id="player1_move" required>
+            
+            <h3>Pelaaja 2: Valitse siirtosi</h3>
+            <div class="button-group">
+                <button type="button" class="move-button" onclick="selectMove('player2_move', 'k', this)">K (Kivi)</button>
+                <button type="button" class="move-button" onclick="selectMove('player2_move', 'p', this)">P (Paperi)</button>
+                <button type="button" class="move-button" onclick="selectMove('player2_move', 's', this)">S (Sakset)</button>
+            </div>
+            <input type="hidden" name="player2_move" id="player2_move" required>
+            
+            <button type="submit" id="submit-btn" disabled>Pelaa kierros</button>
+        </div>
+    {% else %}
+        <h3>Valitse siirtosi</h3>
+        <div class="button-group">
+            <button type="button" class="move-button" onclick="selectMoveAI('k', this)">K (Kivi)</button>
+            <button type="button" class="move-button" onclick="selectMoveAI('p', this)">P (Paperi)</button>
+            <button type="button" class="move-button" onclick="selectMoveAI('s', this)">S (Sakset)</button>
+        </div>
+        <input type="hidden" name="player1_move" id="player1_move" required>
+        
+        <button type="submit" id="submit-btn" disabled>Pelaa kierros</button>
+    {% endif %}
+</form>
+
+<div class="button-group">
+    <form method="GET" action="{{ url_for('reset') }}">
+        <button type="submit">Lopeta peli</button>
+    </form>
+</div>
+
+<script>
+    {% if game_type == 'pelaaja_vs_pelaaja' %}
+    function selectMove(inputId, value, button) {
+        // Clear other selections in the same group
+        const buttons = button.parentElement.querySelectorAll('button');
+        buttons.forEach(btn => btn.style.backgroundColor = '');
+        
+        // Highlight selected button
+        button.style.backgroundColor = '#ccc';
+        
+        // Set the hidden input value
+        document.getElementById(inputId).value = value;
+        
+        // Enable submit button if both players have selected
+        const player1Move = document.getElementById('player1_move').value;
+        const player2Move = document.getElementById('player2_move').value;
+        if (player1Move && player2Move) {
+            document.getElementById('submit-btn').disabled = false;
+        }
+    }
+    {% else %}
+    function selectMoveAI(value, button) {
+        // Clear other selections
+        const buttons = button.parentElement.querySelectorAll('button');
+        buttons.forEach(btn => btn.style.backgroundColor = '');
+        
+        // Highlight selected button
+        button.style.backgroundColor = '#ccc';
+        
+        // Set the hidden input value
+        document.getElementById('player1_move').value = value;
+        
+        // Enable submit button
+        document.getElementById('submit-btn').disabled = false;
+    }
+    {% endif %}
+</script>
+{% endblock %}
