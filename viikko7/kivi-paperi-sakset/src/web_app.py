@@ -28,7 +28,7 @@ GAME_NAMES = {
     "parempi_tekoaly": "Parannettua tekoälyä vastaan"
 }
 
-MAX_ROUNDS = 5  # Games automatically end after 5 rounds
+MAX_ROUNDS = 3  # Games automatically end after 5 rounds
 
 def get_game():
     """Get or create the current game instance"""
