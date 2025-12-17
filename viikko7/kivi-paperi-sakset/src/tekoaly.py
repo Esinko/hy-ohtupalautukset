@@ -1,17 +1,15 @@
-class Tekoaly:
+from tekoaly_base import TekoalyBase
+from kps_peli import Game_Moves
+
+class Tekoaly(TekoalyBase):
     def __init__(self):
-        self._siirto = 0
+        # Stub to initialize a non-remembering, deterministic model
+        self._counter = 0
 
     def anna_siirto(self):
-        self._siirto = self._siirto + 1
-        self._siirto = self._siirto % 3
-
-        if self._siirto == 0:
-            return "k"
-        elif self._siirto == 1:
-            return "p"
-        else:
-            return "s"
+        self._counter += 1
+        siirto = self._counter % 3
+        return Game_Moves[siirto]
 
     def aseta_siirto(self, siirto):
         # ei tehdä mitään
