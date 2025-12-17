@@ -128,7 +128,7 @@ Reset Button Returns To Home
 Start Flask App
     [Documentation]    Start the Flask development server
     Start Process    poetry    run    python    src/web_app.py
-    ...    cwd=/home/runner/work/hy-ohtupalautukset/hy-ohtupalautukset/viikko7/kivi-paperi-sakset
+    ...    cwd=${CURDIR}/..
     ...    alias=flask_server
     ...    stdout=/tmp/flask_stdout.log
     ...    stderr=/tmp/flask_stderr.log
