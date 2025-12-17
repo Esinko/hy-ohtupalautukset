@@ -20,13 +20,15 @@ poetry install
 
 ### Web UI (Recommended)
 
-Start the Flask web server:
+Start the Flask development server:
 
 ```bash
 poetry run python src/web_app.py
 ```
 
 Then open your browser and navigate to: http://localhost:5000
+
+**Note**: This runs a development server with debug mode enabled. For production deployment, use a production-grade WSGI server like gunicorn or waitress with debug mode disabled.
 
 ### CLI Interface
 

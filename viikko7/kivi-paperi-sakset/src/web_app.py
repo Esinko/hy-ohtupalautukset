@@ -180,5 +180,7 @@ def reset():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    # Development server settings - use a production WSGI server for deployment
+    # DEVELOPMENT ONLY - Debug mode should NOT be used in production
+    # For production deployment, use a WSGI server like gunicorn or waitress
+    # with debug=False
     app.run(debug=True, host='0.0.0.0', port=5000)
