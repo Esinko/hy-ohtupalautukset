@@ -38,11 +38,23 @@ Run the command-line version:
 poetry run python src/index.py
 ```
 
+## Running Tests
+
+Run the automated Robot Framework tests for the web UI:
+
+```bash
+poetry run robot tests/web_ui.robot
+```
+
+The tests will automatically start and stop the Flask server, and run in headless Firefox mode.
+
 ## Game Rules
 
 - **K (Kivi)** = Rock: Beats Scissors
 - **P (Paperi)** = Paper: Beats Rock  
 - **S (Sakset)** = Scissors: Beats Paper
+
+Each game consists of **exactly 5 rounds**, after which the final results are displayed.
 
 ## Web UI Screenshots
 

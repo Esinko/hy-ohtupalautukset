@@ -7,6 +7,7 @@
 
 <div class="score-box">
     <h3>Pelitilanne</h3>
+    <p>Kierros: {{ rounds_played + 1 }} / {{ max_rounds }}</p>
     <p>Pelaaja 1: {{ game.player1_points }} pistettä</p>
     <p>Pelaaja 2: {{ game.player2_points }} pistettä</p>
     <p>Tasapelit: {{ game.tie_count }}</p>
@@ -30,23 +31,30 @@
 <form method="POST" action="{{ url_for('make_move') }}">
     {% if game_type == 'pelaaja_vs_pelaaja' %}
         <div class="two-player-form">
-            <h3>Pelaaja 1: Valitse siirtosi</h3>
-            <div class="button-group">
-                <button type="button" class="move-button" onclick="selectMove('player1_move', 'k', this)">K (Kivi)</button>
-                <button type="button" class="move-button" onclick="selectMove('player1_move', 'p', this)">P (Paperi)</button>
-                <button type="button" class="move-button" onclick="selectMove('player1_move', 's', this)">S (Sakset)</button>
-            </div>
-            <input type="hidden" name="player1_move" id="player1_move" required>
+            {% if player1_waiting %}
+            <h3>Pelaaja 1 on tehnyt valintansa</h3>
+            <p style="color: #666;">Nyt on Pelaaja 2:n vuoro!</p>
             
             <h3>Pelaaja 2: Valitse siirtosi</h3>
             <div class="button-group">
-                <button type="button" class="move-button" onclick="selectMove('player2_move', 'k', this)">K (Kivi)</button>
-                <button type="button" class="move-button" onclick="selectMove('player2_move', 'p', this)">P (Paperi)</button>
-                <button type="button" class="move-button" onclick="selectMove('player2_move', 's', this)">S (Sakset)</button>
+                <button type="button" class="move-button" onclick="selectMoveAI('k', this)">K (Kivi)</button>
+                <button type="button" class="move-button" onclick="selectMoveAI('p', this)">P (Paperi)</button>
+                <button type="button" class="move-button" onclick="selectMoveAI('s', this)">S (Sakset)</button>
             </div>
-            <input type="hidden" name="player2_move" id="player2_move" required>
+            <input type="hidden" name="player1_move" id="player1_move" required>
             
             <button type="submit" id="submit-btn" disabled>Pelaa kierros</button>
+            {% else %}
+            <h3>Pelaaja 1: Valitse siirtosi</h3>
+            <div class="button-group">
+                <button type="button" class="move-button" onclick="selectMoveAI('k', this)">K (Kivi)</button>
+                <button type="button" class="move-button" onclick="selectMoveAI('p', this)">P (Paperi)</button>
+                <button type="button" class="move-button" onclick="selectMoveAI('s', this)">S (Sakset)</button>
+            </div>
+            <input type="hidden" name="player1_move" id="player1_move" required>
+            
+            <button type="submit" id="submit-btn" disabled>Vahvista valinta</button>
+            {% endif %}
         </div>
     {% else %}
         <h3>Valitse siirtosi</h3>
@@ -68,26 +76,6 @@
 </div>
 
 <script>
-    {% if game_type == 'pelaaja_vs_pelaaja' %}
-    function selectMove(inputId, value, button) {
-        // Clear other selections in the same group
-        const buttons = button.parentElement.querySelectorAll('button');
-        buttons.forEach(btn => btn.style.backgroundColor = '');
-        
-        // Highlight selected button
-        button.style.backgroundColor = '#ccc';
-        
-        // Set the hidden input value
-        document.getElementById(inputId).value = value;
-        
-        // Enable submit button if both players have selected
-        const player1Move = document.getElementById('player1_move').value;
-        const player2Move = document.getElementById('player2_move').value;
-        if (player1Move && player2Move) {
-            document.getElementById('submit-btn').disabled = false;
-        }
-    }
-    {% else %}
     function selectMoveAI(value, button) {
         // Clear other selections
         const buttons = button.parentElement.querySelectorAll('button');
@@ -102,6 +90,5 @@
         // Enable submit button
         document.getElementById('submit-btn').disabled = false;
     }
-    {% endif %}
 </script>
 {% endblock %}

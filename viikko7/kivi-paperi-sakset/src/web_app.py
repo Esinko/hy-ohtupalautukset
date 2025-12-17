@@ -28,6 +28,8 @@ GAME_NAMES = {
     "parempi_tekoaly": "Parannettua tekoälyä vastaan"
 }
 
+MAX_ROUNDS = 5  # Games automatically end after 5 rounds
+
 def get_game():
     """Get or create the current game instance"""
     if 'game_type' not in session:
@@ -69,9 +71,12 @@ def start_game():
     session['player1_points'] = 0
     session['player2_points'] = 0
     session['tie_count'] = 0
+    session['rounds_played'] = 0
+    session['game_over'] = False
     session['last_player1_move'] = None
     session['last_player2_move'] = None
     session['last_result'] = None
+    session['player1_waiting'] = False  # For two-player mode
     
     # Initialize AI if needed
     if game_type == 'tekoaly':
@@ -89,10 +94,16 @@ def play():
     if not game:
         return redirect(url_for('index'))
     
+    # Check if game is over
+    if session.get('game_over', False):
+        return redirect(url_for('game_over'))
+    
     game_name = GAME_NAMES[session['game_type']]
     last_result = session.get('last_result')
     last_player1_move = session.get('last_player1_move')
     last_player2_move = session.get('last_player2_move')
+    rounds_played = session.get('rounds_played', 0)
+    player1_waiting = session.get('player1_waiting', False)
     
     return render_template('play.html', 
                          game=game, 
@@ -101,7 +112,10 @@ def play():
                          moves=Game_Moves,
                          last_result=last_result,
                          last_player1_move=last_player1_move,
-                         last_player2_move=last_player2_move)
+                         last_player2_move=last_player2_move,
+                         rounds_played=rounds_played,
+                         max_rounds=MAX_ROUNDS,
+                         player1_waiting=player1_waiting)
 
 @app.route('/move', methods=['POST'])
 def make_move():
@@ -109,6 +123,10 @@ def make_move():
     game = get_game()
     if not game:
         return redirect(url_for('index'))
+    
+    # Check if game is already over
+    if session.get('game_over', False):
+        return redirect(url_for('game_over'))
     
     player1_move = request.form.get('player1_move')
     
@@ -118,10 +136,18 @@ def make_move():
     game_type = session['game_type']
     
     if game_type == 'pelaaja_vs_pelaaja':
-        # Two-player mode: need second player's move
-        player2_move = request.form.get('player2_move')
-        if not player2_move or player2_move not in Game_Moves:
+        # Two-player mode with hidden moves
+        if not session.get('player1_waiting', False):
+            # Player 1 just made their move, wait for player 2
+            session['player1_move_temp'] = player1_move
+            session['player1_waiting'] = True
             return redirect(url_for('play'))
+        else:
+            # Player 2 is making their move
+            player2_move = player1_move  # The form value is actually player 2's move
+            player1_move = session.get('player1_move_temp')
+            session['player1_waiting'] = False
+            session.pop('player1_move_temp', None)
     else:
         # AI modes
         if game_type == 'tekoaly':
@@ -158,6 +184,9 @@ def make_move():
     game.record_moves(player1_move, player2_move)
     save_game(game)
     
+    # Increment round counter
+    session['rounds_played'] = session.get('rounds_played', 0) + 1
+    
     # Store move history for display
     session['last_player1_move'] = player1_move
     session['last_player2_move'] = player2_move
@@ -171,7 +200,36 @@ def make_move():
         else:
             session['last_result'] = 'lose'
     
+    # Check if game should end
+    if session['rounds_played'] >= MAX_ROUNDS:
+        session['game_over'] = True
+        return redirect(url_for('game_over'))
+    
     return redirect(url_for('play'))
+
+@app.route('/game_over')
+def game_over():
+    """Game over page showing final results"""
+    game = get_game()
+    if not game:
+        return redirect(url_for('index'))
+    
+    game_name = GAME_NAMES[session.get('game_type', 'tekoaly')]
+    rounds_played = session.get('rounds_played', 0)
+    
+    # Determine winner
+    if game.player1_points > game.player2_points:
+        winner = "Pelaaja 1 voitti pelin!"
+    elif game.player2_points > game.player1_points:
+        winner = "Pelaaja 2 voitti pelin!"
+    else:
+        winner = "Peli päättyi tasapeliin!"
+    
+    return render_template('game_over.html',
+                         game=game,
+                         game_name=game_name,
+                         rounds_played=rounds_played,
+                         winner=winner)
 
 @app.route('/reset')
 def reset():
