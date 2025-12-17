@@ -4,13 +4,15 @@ Uses Flask to provide a simple web interface for the game
 """
 from flask import Flask, render_template, request, session, redirect, url_for
 from typing import Dict, Type
-from kps_peli import KiviPaperiSakset, Game_Moves
+from kps_peli import KiviPaperiSakset, Game_Moves, Winning_Combos
 from kps_pelaaja_vs_pelaaja import KPSPelaajaVsPelaaja
 from kps_tekoaly import KPSTekoaly
 from kps_parempi_tekoaly import KPSParempiTekoaly
 import os
 
 app = Flask(__name__, template_folder='../templates')
+# Note: For production, use a fixed secret key from environment variable
+# e.g., app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 app.secret_key = os.urandom(24)
 
 # Available game types
@@ -164,7 +166,6 @@ def make_move():
     if player1_move == player2_move:
         session['last_result'] = 'tie'
     else:
-        from kps_peli import Winning_Combos
         if player2_move == Winning_Combos.get(player1_move):
             session['last_result'] = 'win'
         else:
