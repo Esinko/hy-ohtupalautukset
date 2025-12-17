@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Tests for Kivi-Paperi-Sakset Web UI
 Library           SeleniumLibrary
+Library           Process
 Suite Setup       Start Flask App
 Suite Teardown    Stop Flask App
 Test Setup        Go To    http://localhost:5000
