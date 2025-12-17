@@ -139,9 +139,9 @@ def make_move():
                 move_counts = {move: ai_memory.count(move) for move in Game_Moves}
                 
                 # Choose counter-move based on most frequent player move
-                if move_counts["k"] > move_counts["p"] or move_counts["k"] > move_counts["s"]:
+                if move_counts["k"] > move_counts["p"] and move_counts["k"] > move_counts["s"]:
                     player2_move = "p"
-                elif move_counts["p"] > move_counts["k"] or move_counts["p"] > move_counts["s"]:
+                elif move_counts["p"] > move_counts["k"] and move_counts["p"] > move_counts["s"]:
                     player2_move = "s"
                 else:
                     player2_move = "k"
@@ -179,4 +179,5 @@ def reset():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
+    # Development server settings - use a production WSGI server for deployment
     app.run(debug=True, host='0.0.0.0', port=5000)
