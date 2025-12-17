@@ -128,10 +128,7 @@ Reset Button Returns To Home
 Start Flask App
     [Documentation]    Start the Flask development server
     Start Process    poetry    run    python    src/web_app.py
-    ...    cwd=${CURDIR}/..
     ...    alias=flask_server
-    ...    stdout=/tmp/flask_stdout.log
-    ...    stderr=/tmp/flask_stderr.log
     Sleep    3s    # Wait for server to start
     Open Browser    ${SERVER_URL}    ${BROWSER}
 

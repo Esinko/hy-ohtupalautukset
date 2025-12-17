@@ -4,3 +4,8 @@ __pycache__/
 htmlcov/
 .coverage
 scrapped/
+report.html
+output.html
+output.xml
+log.html
+geckodriver*
