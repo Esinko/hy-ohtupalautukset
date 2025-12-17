@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Peli päättyi - {{ game_name }}{% endblock %}
+
+{% block content %}
+<h2>Peli päättyi!</h2>
+
+<div class="score-box" style="background-color: #e8f4f8;">
+    <h3>Lopputulos</h3>
+    <p><strong>{{ winner }}</strong></p>
+    <p>Pelatut kierrokset: {{ rounds_played }}</p>
+</div>
+
+<div class="score-box">
+    <h3>Lopullinen tilanne</h3>
+    <p>Pelaaja 1: {{ game.player1_points }} pistettä</p>
+    <p>Pelaaja 2: {{ game.player2_points }} pistettä</p>
+    <p>Tasapelit: {{ game.tie_count }}</p>
+</div>
+
+<div class="button-group">
+    <form method="GET" action="{{ url_for('index') }}">
+        <button type="submit">Palaa alkuun</button>
+    </form>
+</div>
+{% endblock %}
